@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import phonebookService from './phonebookService'; 
 
 const Filter = ({ value, onChange }) => (
   <div>
@@ -20,24 +21,28 @@ const PersonForm = ({ onSubmit, newName, onNameChange, newNumber, onNumberChange
   </form>
 );
 
-const Persons = ({ persons }) => (
+const Persons = ({ persons, onDelete }) => (
   <div>
     {persons.map(person => (
-      <p key={person.name}>{person.name} {person.number}</p>
+      <p key={person.id}>
+        {person.name} {person.number} 
+        <button onClick={() => onDelete(person.id)}>delete</button>
+      </p>
     ))}
   </div>
 );
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456' },
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filter, setFilter] = useState('');
+
+  useEffect(() => {
+    phonebookService.getAll().then(initialPersons => {
+      setPersons(initialPersons);
+    });
+  }, []);
 
   const handleNameChange = (event) => setNewName(event.target.value);
   const handleNumberChange = (event) => setNewNumber(event.target.value);
@@ -45,14 +50,46 @@ const App = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
+    const existingPerson = persons.find(person => person.name === newName);
+    if (existingPerson) {
+      if (window.confirm(`${newName} On jo puhelinluettelossa ylikirjoitetaanko se uudella numerolla?`)) {
+        const updatedPerson = { ...existingPerson, number: newNumber };
+        phonebookService
+          .update(existingPerson.id, updatedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson));
+            setNewName('');
+            setNewNumber('');
+          })
+          .catch(error => {
+            alert(`${existingPerson.name} on jo poistettu serveriltä.`);
+            setPersons(persons.filter(person => person.id !== existingPerson.id));
+          });
+      }
       return;
     }
     const newPerson = { name: newName, number: newNumber };
-    setPersons(persons.concat(newPerson));
-    setNewName('');
-    setNewNumber('');
+    phonebookService
+      .create(newPerson)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName('');
+        setNewNumber('');
+      });
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Oletko varma?')) {
+      phonebookService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id));
+        })
+        .catch(error => {
+          alert(`Numero on jo poistettu serveriltä`);
+          setPersons(persons.filter(person => person.id !== id));
+        });
+    }
   };
 
   const filteredPersons = persons.filter(person =>
@@ -75,7 +112,7 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} onDelete={handleDelete} />
     </div>
   );
 };
