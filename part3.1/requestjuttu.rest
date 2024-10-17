@@ -1,1 +1,7 @@
-DELETE http://localhost:3001/api/persons/1
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "maija meikxwä2l2äinen",
+  "number": "123-4546-37ss89"
+}
