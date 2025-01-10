@@ -1,0 +1,15 @@
+body {
+    font-family: Arial, sans-serif;
+  }
+  
+  h2, h3 {
+    color: #333;
+  }
+  
+  input {
+    margin: 5px;
+  }
+  
+  button {
+    margin-left: 10px;
+  }

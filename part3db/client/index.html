@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phonebook</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const personsService = {
+      getAll: () => fetch('/api/persons').then(response => response.json()),
+      create: (newObject) => fetch('/api/persons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newObject)
+      }).then(response => {
+        if (!response.ok) {
+          throw response; 
+        }
+        return response.json();
+      }),
+      update: (id, newObject) => fetch(`/api/persons/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newObject)
+      }).then(response => response.json()),
+      remove: (id) => fetch(`/api/persons/${id}`, { method: 'DELETE' }).then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to delete person');
+        }
+      })
+    };
+
+    const App = () => {
+      const [persons, setPersons] = useState([]);
+      const [newName, setNewName] = useState('');
+      const [newNumber, setNewNumber] = useState('');
+      const [search, setSearch] = useState('');
+
+      useEffect(() => {
+        personsService.getAll().then(initialPersons => {
+          setPersons(initialPersons);
+        });
+      }, []);
+
+      const addPerson = (event) => {
+        event.preventDefault();
+        const personObject = { name: newName, number: newNumber };
+
+        const existingPerson = persons.find(person => person.number === newNumber);
+        if (existingPerson) {
+          alert(`${newNumber} is already added to the phonebook`);
+          return;
+        }
+
+        personsService.create(personObject)
+          .then(returnedPerson => {
+            setPersons(persons.concat(returnedPerson));
+            setNewName('');
+            setNewNumber('');
+          })
+          .catch(error => {
+            console.error('Error adding person:', error);
+            error.json().then(err => {
+              alert(`Failed to add person: ${err.error}`);
+            }).catch(() => {
+              alert('Failed to add person: An unexpected error ocurred.');
+            });
+          });
+      };
+
+      const deletePerson = (id) => {
+        if (window.confirm('Do you really want to delete this person?')) {
+          personsService.remove(id)
+            .then(() => {
+              setPersons(persons.filter(person => person.id !== id));
+            })
+            .catch(error => {
+              console.error('Error deleting person:', error);
+              alert('Failed to delete person: An unexpected error ocurred.');
+            });
+        }
+      };
+
+      const handleNameChange = (event) => setNewName(event.target.value);
+      const handleNumberChange = (event) => setNewNumber(event.target.value);
+      const handleSearchChange = (event) => setSearch(event.target.value);
+
+      const personsToShow = persons.filter(person =>
+        person.name.toLowerCase().includes(search.toLowerCase())
+      );
+
+      return (
+        <div>
+          <h2>Phonebook</h2>
+          <div>
+            filter shown with <input value={search} onChange={handleSearchChange} />
+          </div>
+          <h3>Add a new</h3>
+          <form onSubmit={addPerson}>
+            <div>
+              name: <input value={newName} onChange={handleNameChange} />
+            </div>
+            <div>
+              number: <input value={newNumber} onChange={handleNumberChange} />
+            </div>
+            <div>
+              <button type="submit">add</button>
+            </div>
+          </form>
+          <h3>Numbers</h3>
+          <ul>
+            {personsToShow.map(person =>
+              <li key={person.id}>
+                {person.name} {person.number}
+                <button onClick={() => deletePerson(person.id)}>delete</button>
+              </li>
+            )}
+          </ul>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
