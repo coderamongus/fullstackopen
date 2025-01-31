@@ -1,24 +1,40 @@
-require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config();
+const Blog = require('./componentit/blogsModel');
 const blogsRouter = require('./componentit/blogsRouter');
 
 const app = express();
-app.use(express.json()); // For parsing JSON bodies
-
-const mongoUrl = process.env.MONGO_URI; // Use the connection string from the .env file
-
-mongoose.connect(mongoUrl)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error) => {
-    console.log('Error connecting to MongoDB:', error.message);
-  });
-
+app.use(express.json());
 app.use('/api/blogs', blogsRouter);
 
+const connectToDatabase = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI); 
+    console.log('MongoDB connected');
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+  }
+};
+
+connectToDatabase();
+
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
+
+const shutdown = () => {
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed');
+    server.close(() => {
+      console.log('Server closed');
+    });
+  });
+};
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
+module.exports = { app, server, shutdown }; // Export app, server, and shutdown function
