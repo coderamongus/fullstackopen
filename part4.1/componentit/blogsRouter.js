@@ -28,19 +28,27 @@ blogsRouter.post('/', async (req, res) => {
   }
 });
 
-
-blogsRouter.delete('/:id', async (req, res) => {
+blogsRouter.delete('/:id', async (request, response) => {
   try {
-    const blog = await Blog.findByIdAndDelete(req.params.id);
-    if (blog) {
-      res.status(204).end();
-    } else {
-      res.status(404).json({ error: 'Blog not found' });
+    const blog = await Blog.findById(request.params.id);
+
+    if (!blog) {
+      return response.status(204).end();
     }
+
+    await Blog.findByIdAndDelete(request.params.id); 
+    response.status(204).end();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete blog' });
+    console.error('Error during deletion:', error);
+
+    if (error.name === 'CastError') {
+      return response.status(400).json({ error: 'Invalid ID format' });
+    }
+
+    response.status(500).json({ error: 'Something went wrong' });
   }
 });
+
 
 
 module.exports = blogsRouter;
