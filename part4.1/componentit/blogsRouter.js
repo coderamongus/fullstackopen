@@ -49,6 +49,29 @@ blogsRouter.delete('/:id', async (request, response) => {
   }
 });
 
+blogsRouter.put('/:id', async (req, res) => {
+  const { likes } = req.body;
+
+  if (likes === undefined) {
+    return res.status(400).json({ error: 'Likes field is required' });
+  }
+
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      req.params.id,
+      { likes },
+      { new: true, runValidators: true, context: 'query' }
+    );
+
+    if (updatedBlog) {
+      res.json(updatedBlog);
+    } else {
+      res.status(404).json({ error: 'Blog not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ error: 'Invalid ID format' });
+  }
+});
 
 
 module.exports = blogsRouter;

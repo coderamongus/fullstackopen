@@ -136,6 +136,44 @@ describe('List Helper Functions', () => {
     await api.delete(`/api/blogs/${nonExistentId}`).expect(204);
   });
   
+  test('should update likes of a blog', async () => {
+    const blogsAtStart = await api.get('/api/blogs');
+    const blogToUpdate = blogsAtStart.body[0];
+  
+    const updatedData = { likes: blogToUpdate.likes + 1 };
+  
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedData)
+      .expect(200);
+  
+    expect(response.body.likes).toBe(blogToUpdate.likes + 1);
+  });
+  
+  test('should return 400 if likes field is missing', async () => {
+    const blogsAtStart = await api.get('/api/blogs');
+    const blogToUpdate = blogsAtStart.body[0];
+  
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({})
+      .expect(400);
+  });
+  
+  test('should return 404 if blog does not exist', async () => {
+    const nonExistentId = '000000000000000000000000';
+    await api
+      .put(`/api/blogs/${nonExistentId}`)
+      .send({ likes: 5 })
+      .expect(404);
+  });
+  
+  test('should return 400 for invalid ID format', async () => {
+    await api
+      .put('/api/blogs/invalid-id')
+      .send({ likes: 5 })
+      .expect(400);
+  });
   
 
 });
