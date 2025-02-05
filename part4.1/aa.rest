@@ -1,20 +1,19 @@
-### uusi blöggers
+### Uusi blöggers
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
   "title": "Kaupparesissu",
-  "author": "Jaakkso pänninen",
+  "author": "Jaakkso Pänninen",
   "url": "http://eehsehehehlööö.com/blöggersön",
   "likes": 20025
 }
 
-### hanki kaikki
+### Hanki kaikki
 GET http://localhost:3001/api/blogs
 
-### poisto
+### Poisto
 DELETE http://localhost:3001/api/blogs/67864a14ece5c70e0759f09f
-
 
 ### Ei toimiva bloggers
 POST http://localhost:3001/api/blogs
@@ -23,3 +22,16 @@ Content-Type: application/json
 {
   "title": "e3pävalmis höskä"
 }
+
+### Käyttäjien lisääminen
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+  "username": "mluuksskaisss",
+  "name": "Matti Luukkainen",
+  "password": "salainen"
+}
+
+### käyttäjien hakeminen
+GET http://localhost:3001/api/users

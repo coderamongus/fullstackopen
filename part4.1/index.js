@@ -3,10 +3,12 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const Blog = require('./componentit/blogsModel');
 const blogsRouter = require('./componentit/blogsRouter');
+const usersRouter = require('./componentit/userRouter.js');
 
 const app = express();
 app.use(express.json());
 app.use('/api/blogs', blogsRouter);
+app.use('/api/users', usersRouter); 
 
 const connectToDatabase = async () => {
   try {
@@ -37,4 +39,4 @@ const shutdown = () => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-module.exports = { app, server, shutdown }; // Export app, server, and shutdown function
+module.exports = { app, server, shutdown }; 
