@@ -22,6 +22,7 @@ usersRouter.post('/', async (request, response) => {
   const passwordHash = await bcrypt.hash(password, saltRounds);
 
   const user = new User({ username, name, passwordHash });
+
   try {
     const savedUser = await user.save();
     response.status(201).json(savedUser);
@@ -30,7 +31,6 @@ usersRouter.post('/', async (request, response) => {
     response.status(500).json({ error: 'An error occurred while creating the user' });
   }
 });
-
 
 usersRouter.get('/', async (request, response) => {
   const users = await User.find({});
