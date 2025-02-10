@@ -3,17 +3,18 @@ POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
 {
-  "title": "Kaupparesissu",
-  "author": "Jaakkso Pänninen",
-  "url": "http://eehsehehehlööö.com/blöggersön",
-  "likes": 20025
+  "title": "New Blog Titteli",
+  "author": "Test Author",
+  "url": "http://example.com",
+  "likes": 10,
+  "userId": "67a9c5fb5bda10d365e21944"
 }
 
 ### Hanki kaikki
 GET http://localhost:3001/api/blogs
 
 ### Poisto
-DELETE http://localhost:3001/api/blogs/67864a14ece5c70e0759f09f
+DELETE http://localhost:3001/api/blogs/67a9c94084333b363e9bf3bb
 
 ### Ei toimiva bloggers
 POST http://localhost:3001/api/blogs
@@ -28,9 +29,9 @@ POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-  "username": "mluuksskaisss",
-  "name": "Matti Luukkainen",
-  "password": "salainen"
+  "username": "newuser",
+  "name": "New User",
+  "password": "newpassword"
 }
 
 ### käyttäjien hakeminen
