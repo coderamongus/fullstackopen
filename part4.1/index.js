@@ -1,12 +1,12 @@
 const express = require('express');
+const app = express();
 const mongoose = require('mongoose');
+app.use(express.json());
 require('dotenv').config();
+const loginRouter = require('./controllers/loginController');
 const blogsRouter = require('./componentit/blogsRouter');
 const usersRouter = require('./componentit/userRouter.js');
-
-const app = express();
-app.use(express.json());
-
+app.use('/api/login', loginRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
 
@@ -30,6 +30,18 @@ const shutdown = async () => {
     process.exit(0);
   });
 };
+
+app.use((error, request, response, next) => {
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message });
+  } else if (error.name === 'JsonWebTokenError') {
+    return response.status(401).json({ error: 'token missing or invalid' });
+  }
+
+  next(error);
+});
 
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);

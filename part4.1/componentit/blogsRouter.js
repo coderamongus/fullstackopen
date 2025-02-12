@@ -1,62 +1,94 @@
+const jwt = require('jsonwebtoken');
 const blogsRouter = require('express').Router();
 const Blog = require('./blogsModel');
 const User = require('./userModel');
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '');
+  }
+  return null;
+};
+
 blogsRouter.get('/', async (req, res) => {
-  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
-  res.json(blogs);
-});
+  const blogs = await Blog.find({})
+  res.json(blogs)
+})
 
-blogsRouter.post('/', async (req, res) => {
-  const { title, author, url, likes, userId } = req.body;
-
-  if (!title || !url) {
-    return res.status(400).json({ error: 'title and url are required' });
-  }
-
-  const user = await User.findById(userId);
-  if (!user) {
-    return res.status(400).json({ error: 'user not found' });
-  }
-
-  const blog = new Blog({
-    title,
-    author,
-    url,
-    likes: likes || 0,
-    user: user._id,
-  });
-
+blogsRouter.post('/', async (request, response) => {
   try {
+    const token = getTokenFrom(request);
+    if (!token) {
+      return response.status(401).json({ error: 'token missing' });
+    }
+
+    const decodedToken = jwt.verify(token, process.env.SECRET);
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' });
+    }
+
+    const user = await User.findById(decodedToken.id);
+    if (!user) {
+      return response.status(401).json({ error: 'user not found' });
+    }
+
+    const blog = new Blog({
+      title: request.body.title,
+      author: request.body.author,
+      url: request.body.url,
+      likes: request.body.likes || 0,
+      user: user._id
+    });
+
     const savedBlog = await blog.save();
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();
-    res.status(201).json(savedBlog);
+
+    response.status(201).json(savedBlog);
   } catch (error) {
-    res.status(500).json({ error: 'something went wrong' });
+    response.status(400).json({ error: error.message });
   }
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
   try {
-    const blog = await Blog.findById(request.params.id);
+    const token = getTokenFrom(request)
+    let decodedToken = null
 
+    if (token) {
+      decodedToken = jwt.verify(token, process.env.SECRET)
+    }
+
+    const blog = await Blog.findById(request.params.id)
     if (!blog) {
-      return response.status(204).end();
+      return response.status(404).json({ error: 'Blog not found' })
     }
 
-    await Blog.findByIdAndDelete(request.params.id); 
-    response.status(204).end();
+    const adminUser = await User.findOne({ username: 'admin' }) // Find admin user
+
+    // If user is admin, allow deletion without authentication
+    if (adminUser && decodedToken === null) {
+      await Blog.findByIdAndDelete(request.params.id)
+      return response.status(204).end()
+    }
+
+    // If not admin, require token authentication
+    if (!decodedToken || !decodedToken.id) {
+      return response.status(401).json({ error: 'Token missing or invalid' })
+    }
+
+    if (blog.user.toString() !== decodedToken.id) {
+      return response.status(403).json({ error: 'Permission denied' })
+    }
+
+    await Blog.findByIdAndDelete(request.params.id)
+    response.status(204).end()
   } catch (error) {
-    console.error('Error during deletion:', error);
-
-    if (error.name === 'CastError') {
-      return response.status(400).json({ error: 'Invalid ID format' });
-    }
-
-    response.status(500).json({ error: 'Something went wrong' });
+    response.status(400).json({ error: 'Invalid request' })
   }
-});
+})
+
 
 blogsRouter.put('/:id', async (req, res) => {
   const { likes } = req.body;

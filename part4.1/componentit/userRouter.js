@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
-const usersRouter = require('express').Router();
+const usersRouter = require('express').Router();   
 const User = require('./userModel');
+const Blog = require('./blogsModel'); 
 
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body;
@@ -35,6 +36,26 @@ usersRouter.post('/', async (request, response) => {
 usersRouter.get('/', async (request, response) => {
   const users = await User.find({}).populate('blogs', { title: 1, author: 1, url: 1, likes: 1 });
   response.json(users);
+});
+
+usersRouter.delete('/:id', async (request, response) => {
+  try {
+    const userId = request.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return response.status(404).json({ error: 'User not found' });
+    }
+
+    await Blog.deleteMany({ user: userId });
+
+    await User.findByIdAndDelete(userId);
+
+    response.status(204).end();
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: 'An error occurred while deleting the user' });
+  }
 });
 
 module.exports = usersRouter;

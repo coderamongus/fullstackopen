@@ -1,20 +1,29 @@
 ### Uusi blöggers
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2N2FjNWYyNjQ5ZmYyNzY2NmFkZDVjNTYiLCJpYXQiOjE3MzkzNTEwMTl9.H6CYnhqYnWCLXNqZgyKU42Toou6oPt4mPBxj_KAzBMc
 
 {
-  "title": "New Blog Titteli",
-  "author": "Test Author",
+  "title": "tokentesting",
+  "author": "Adminus maximus", 
   "url": "http://example.com",
   "likes": 10,
-  "userId": "67a9c5fb5bda10d365e21944"
+  "userId": "67ac5f2649ff27666add5c56"
 }
 
-### Hanki kaikki
+### blogejen hakeminen
 GET http://localhost:3001/api/blogs
 
-### Poisto
-DELETE http://localhost:3001/api/blogs/67a9c94084333b363e9bf3bb
+### käyttäjien hakeminen
+GET http://localhost:3001/api/users
+
+### Poisto blogeille
+DELETE http://localhost:3001/api/blogs/67ac64b5aee035d86e695b84
+Content-Type: application/json
+
+### Poista käyttäjä ID:llä
+DELETE http://localhost:3001/api/users/67a9c2efff2004e3c49a261a
+Content-Type: application/json
 
 ### Ei toimiva bloggers
 POST http://localhost:3001/api/blogs
@@ -29,10 +38,16 @@ POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-  "username": "newuser",
-  "name": "New User",
-  "password": "newpassword"
+  "username": "admin",
+  "name": "Adminus Maximus",
+  "password": "admin"
 }
 
-### käyttäjien hakeminen
-GET http://localhost:3001/api/users
+### login
+POST http://localhost:3001/api/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
