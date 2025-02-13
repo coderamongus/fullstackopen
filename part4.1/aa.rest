@@ -1,14 +1,14 @@
 ### Uusi blöggers
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2N2FjNWYyNjQ5ZmYyNzY2NmFkZDVjNTYiLCJpYXQiOjE3MzkzNTEwMTl9.H6CYnhqYnWCLXNqZgyKU42Toou6oPt4mPBxj_KAzBMc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RpMiIsImlkIjoiNjdhZGM5ODBhYzIzZjQ2ZjhiMWQzY2NlIiwiaWF0IjoxNzM5NDQyODA0fQ.tMSQ4WgaHHEQ7sgOrwJBte9UYjyyG2125tUFDMgExR0
 
 {
-  "title": "tokentesting",
-  "author": "Adminus maximus", 
+  "title": "testi2ing",
+  "author": "jaakko peräniemi", 
   "url": "http://example.com",
   "likes": 10,
-  "userId": "67ac5f2649ff27666add5c56"
+  "userId": "67adc96dac23f46f8b1d3cca"
 }
 
 ### blogejen hakeminen
@@ -18,12 +18,14 @@ GET http://localhost:3001/api/blogs
 GET http://localhost:3001/api/users
 
 ### Poisto blogeille
-DELETE http://localhost:3001/api/blogs/67ac64b5aee035d86e695b84
+DELETE http://localhost:3001/api/blogs/67adc9ecac23f46f8b1d3cdc
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RpMiIsImlkIjoiNjdhZGM5ODBhYzIzZjQ2ZjhiMWQzY2NlIiwiaWF0IjoxNzM5NDQyODA0fQ.tMSQ4WgaHHEQ7sgOrwJBte9UYjyyG2125tUFDMgExR0
 
 ### Poista käyttäjä ID:llä
-DELETE http://localhost:3001/api/users/67a9c2efff2004e3c49a261a
+DELETE http://localhost:3001/api/users/67adc914ac23f46f8b1d3cc0
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2N2FjNWYyNjQ5ZmYyNzY2NmFkZDVjNTYiLCJpYXQiOjE3Mzk0NDI0ODN9.llQlKvEkNV59eto4L4fUiVb5ZCy576nk6LHJUwTjCpQ
 
 ### Ei toimiva bloggers
 POST http://localhost:3001/api/blogs
@@ -38,9 +40,9 @@ POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "name": "Adminus Maximus",
-  "password": "admin"
+  "username": "testi2",
+  "name": "jaakko peräniemi2",
+  "password": "testi2"
 }
 
 ### login
@@ -48,6 +50,6 @@ POST http://localhost:3001/api/login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin"
+  "username": "testi2",
+  "password": "testi2"
 }

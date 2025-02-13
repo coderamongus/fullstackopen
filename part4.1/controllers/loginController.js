@@ -4,7 +4,7 @@ const loginRouter = require('express').Router();
 const User = require('../componentit/userModel');
 
 loginRouter.post('/', async (request, response) => {
-    console.log('Incoming request body:', request.body); // Debug log
+    console.log('Incoming request body:', request.body); 
     const { username, password } = request.body;
 
     const user = await User.findOne({ username });

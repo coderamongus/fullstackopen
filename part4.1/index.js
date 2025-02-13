@@ -6,6 +6,9 @@ require('dotenv').config();
 const loginRouter = require('./controllers/loginController');
 const blogsRouter = require('./componentit/blogsRouter');
 const usersRouter = require('./componentit/userRouter.js');
+const { tokenExtractor } = require('./componentit/middleware');
+
+app.use(tokenExtractor);
 app.use('/api/login', loginRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
