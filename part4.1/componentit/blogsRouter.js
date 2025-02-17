@@ -59,7 +59,7 @@ blogsRouter.delete('/:id', async (request, response) => {
 
     const adminUser = await User.findOne({ username: 'admin' });
 
-    if (adminUser && decodedToken === null) {
+    if (adminUser && decodedToken && decodedToken.id === adminUser._id.toString()) {
       await Blog.findByIdAndDelete(request.params.id);
       return response.status(204).end();
     }
