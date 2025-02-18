@@ -4,33 +4,20 @@ const Blog = require('./blogsModel');
 const User = require('./userModel');
 
 blogsRouter.get('/', async (req, res) => {
-  const blogs = await Blog.find({})
-  res.json(blogs)
-})
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
+  res.json(blogs);
+});
 
 blogsRouter.post('/', async (request, response) => {
   try {
-    const token = request.token;
-    if (!token) {
-      return response.status(401).json({ error: 'token missing' });
-    }
-
-    const decodedToken = jwt.verify(token, process.env.SECRET);
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'token invalid' });
-    }
-
-    const user = await User.findById(decodedToken.id);
-    if (!user) {
-      return response.status(401).json({ error: 'user not found' });
-    }
+    const user = request.user;
 
     const blog = new Blog({
       title: request.body.title,
       author: request.body.author,
       url: request.body.url,
       likes: request.body.likes || 0,
-      user: user._id
+      user: user._id,
     });
 
     const savedBlog = await blog.save();
@@ -45,30 +32,14 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
   try {
-    const token = request.token;
-    let decodedToken = null;
-
-    if (token) {
-      decodedToken = jwt.verify(token, process.env.SECRET);
-    }
-
+    const user = request.user; 
     const blog = await Blog.findById(request.params.id);
+
     if (!blog) {
       return response.status(404).json({ error: 'Blog not found' });
     }
 
-    const adminUser = await User.findOne({ username: 'admin' });
-
-    if (adminUser && decodedToken && decodedToken.id === adminUser._id.toString()) {
-      await Blog.findByIdAndDelete(request.params.id);
-      return response.status(204).end();
-    }
-
-    if (!decodedToken || !decodedToken.id) {
-      return response.status(401).json({ error: 'Token missing or invalid' });
-    }
-
-    if (blog.user.toString() !== decodedToken.id) {
+    if (blog.user.toString() !== user._id.toString() && user.username !== 'admin') {
       return response.status(403).json({ error: 'Permission denied' });
     }
 

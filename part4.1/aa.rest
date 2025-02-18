@@ -1,26 +1,27 @@
 ### Uusi blöggers
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RhYSBwb2lzdG9hIiwiaWQiOiI2N2IyZmNhYzFiNzJhNzIzZGQ3YjU3MzciLCJpYXQiOjE3Mzk3ODY2MDB9.ZbO1-e8_lUUdjJjPT8IRHRbjWApkhOXxzxrPBMZBoUw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RpMiIsImlkIjoiNjdiMzA5OGYzZTRmYjJhY2QyYjBlOTU1IiwiaWF0IjoxNzM5ODcyOTg3fQ.zmfzILW64-ez6l3wJPJCA2QX8tlTBfaiL7Y2JGFHAOY
 
 {
-  "title": "testi2ing3",
+  "title": "testi omistaja poistaa",
   "author": "jaakko peräniemi", 
   "url": "http://example.com",
-  "likes": 10,
+  "likes": 120,
   "userId": "67adc96dac23f46f8b1d3cca"
 }
 
 ### blogejen hakeminen
 GET http://localhost:3001/api/blogs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2N2FjNWYyNjQ5ZmYyNzY2NmFkZDVjNTYiLCJpYXQiOjE3Mzk3ODY3NDN9.YEipqhClWW6hVo0aQhBc4Zs5FBnX2Txjo7AUEQc3sYw
 
 ### käyttäjien hakeminen
 GET http://localhost:3001/api/users
 
 ### Poisto blogeille
-DELETE http://localhost:3001/api/blogs/67b3097b3e4fb2acd2b0e94f
+DELETE http://localhost:3001/api/blogs/67b45b0d0082408ec8ebebdd
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2N2FjNWYyNjQ5ZmYyNzY2NmFkZDVjNTYiLCJpYXQiOjE3Mzk3ODY3NDN9.YEipqhClWW6hVo0aQhBc4Zs5FBnX2Txjo7AUEQc3sYw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2N2FjNWYyNjQ5ZmYyNzY2NmFkZDVjNTYiLCJpYXQiOjE3Mzk4NzMyMDR9.riseD61an8KkxrspO_DsGyofiQ6Sa4epRoLvgfjB58c
 
 ### Poista käyttäjä ID:llä
 DELETE http://localhost:3001/api/users/67b301805516687a925adf88
