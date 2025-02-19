@@ -41,9 +41,9 @@ POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-  "username": "testi2",
-  "name": "jaakko peräniemi2",
-  "password": "testi2"
+  "username": "admin",
+  "name": "adminus maximus",
+  "password": "admin"
 }
 
 ### login
