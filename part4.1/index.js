@@ -7,6 +7,8 @@ const loginRouter = require('./controllers/loginController');
 const blogsRouter = require('./componentit/blogsRouter');
 const usersRouter = require('./componentit/userRouter.js');
 const { tokenExtractor, userExtractor } = require('./componentit/middleware');
+const cors = require('cors');
+app.use(cors());
 
 app.use(tokenExtractor);
 app.use('/api/blogs', userExtractor, blogsRouter);

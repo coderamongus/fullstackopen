@@ -1,14 +1,14 @@
 ### Uusi blöggers
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RpMiIsImlkIjoiNjdiMzA5OGYzZTRmYjJhY2QyYjBlOTU1IiwiaWF0IjoxNzM5ODcyOTg3fQ.zmfzILW64-ez6l3wJPJCA2QX8tlTBfaiL7Y2JGFHAOY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBpc3Nha2Fra2ExMjMiLCJpZCI6IjY3Yjg3ZDg5MzBjOWFiMzU0NWViNzg5MSIsImlhdCI6MTc0MDE0NDI5OH0.6txz73FZVfa-3EE0m6MJ1361-3WNn5MCQoVu-YgNic8
 
 {
-  "title": "testi omistaja poistaa",
-  "author": "jaakko peräniemi", 
+  "title": "pissakakkablogi frontendissä :)",
+  "author": "pissakakka123", 
   "url": "http://example.com",
   "likes": 120,
-  "userId": "67adc96dac23f46f8b1d3cca"
+  "userId": "67b87d8930c9ab3545eb7891"
 }
 
 ### blogejen hakeminen
@@ -41,9 +41,9 @@ POST http://localhost:3001/api/users
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "name": "adminus maximus",
-  "password": "admin"
+  "username": "justusjokinen",
+  "name": "justusjokinen",
+  "password": "justusjokinen"
 }
 
 ### login
@@ -51,6 +51,6 @@ POST http://localhost:3001/api/login
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "admin"
+  "username": "pissakakka123",
+  "password": "pissakakka123"
 }
