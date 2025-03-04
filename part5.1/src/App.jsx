@@ -1,55 +1,70 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const App = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [blogs, setBlogs] = useState([]); 
+  const [blogs, setBlogs] = useState([]);
+
+  useEffect(() => {
+    // Check localStorage for stored user
+    const loggedUserJSON = window.localStorage.getItem("loggedBlogUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      axios
+        .get("http://localhost:3001/api/blogs", {
+          headers: { Authorization: `Bearer ${user.token}` },
+        })
+        .then((response) => {
+          setBlogs(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching blogs:", error);
+        });
+    }
+  }, [user]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
-
     try {
-      const response = await axios.post('http://localhost:3001/api/login', {
+      const response = await axios.post("http://localhost:3001/api/login", {
         username,
         password,
       });
 
-      setUser(response.data); 
+      const user = response.data;
+      setUser(user);
+      window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
+      setUsername("");
+      setPassword("");
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
     }
   };
 
-  useEffect(() => {
-    if (user) {
-      axios.get('http://localhost:3001/api/blogs', {
-        headers: {
-          Authorization: `Bearer ${user.token}` 
-        }
-      })
-      .then(response => {
-        setBlogs(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetcing blogs:', error.message);
-      });
-    }
-  }, [user]);
-  
+  const handleLogout = () => {
+    window.localStorage.removeItem("loggedBlogUser");
+    setUser(null);
+  };
 
-  if (user === null) {
-    return (
-      <div>
-        <h2>Log in to application</h2>
+  return (
+    <div>
+      {!user ? (
         <form onSubmit={handleLogin}>
+          <h2>Login</h2>
           <div>
             Username:
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={({ target }) => setUsername(target.value)}
             />
           </div>
           <div>
@@ -57,26 +72,23 @@ const App = () => {
             <input
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={({ target }) => setPassword(target.value)}
             />
           </div>
           <button type="submit">Login</button>
         </form>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <h2>Blogs</h2>
-      <p>{user.name} logged in</p>
-      <ul>
-        {blogs.map(blog => (
-          <li key={blog.id}>
-            {blog.title} by {blog.author}
-          </li>
-        ))}
-      </ul>
+      ) : (
+        <div>
+          <p>{user.name} logged in</p>
+          <button onClick={handleLogout}>Logout</button>
+          <h2>Blogs</h2>
+          <ul>
+            {blogs.map((blog) => (
+              <li key={blog.id}>{blog.title} by {blog.author}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
