@@ -13,7 +13,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBpc
 
 ### blogejen hakeminen
 GET http://localhost:3001/api/blogs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWQiOiI2N2FjNWYyNjQ5ZmYyNzY2NmFkZDVjNTYiLCJpYXQiOjE3Mzk3ODY3NDN9.YEipqhClWW6hVo0aQhBc4Zs5FBnX2Txjo7AUEQc3sYw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBpc3Nha2Fra2ExMjMiLCJpZCI6IjY3Yjg3ZDg5MzBjOWFiMzU0NWViNzg5MSIsImlhdCI6MTc0MTA4NzcwNn0.HrfipiWO0boyce_juZ5TX9xkI5xLnnSPCGHGJb8KLFA
 
 ### käyttäjien hakeminen
 GET http://localhost:3001/api/users
