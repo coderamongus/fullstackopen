@@ -12,9 +12,7 @@ const BlogForm = ({ createBlog }) => {
       author: newAuthor,
       url: newUrl
     });
-
-    alert(`A new blog "${newTitle}" by ${newAuthor} added!`);
-
+    
     setNewTitle('');
     setNewAuthor('');
     setNewUrl('');
