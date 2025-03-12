@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
-import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -10,7 +10,6 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [notification, setNotification] = useState({ message: '', type: '' });
-  const [blogFormVisible, setBlogFormVisible] = useState(false);
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedBlogUser');
@@ -81,9 +80,9 @@ const App = () => {
 
       setBlogs(blogs.concat(response.data));
       showNotification(`A new blog "${blogObject.title}" by ${blogObject.author} added!`);
-      setBlogFormVisible(false);
     } catch (error) {
       console.error('Error creating blog:', error);
+
       const errorMessage = error.response?.data?.error || 'Error creating blog';
       showNotification(errorMessage, 'error');
     }
@@ -91,7 +90,7 @@ const App = () => {
 
   return (
     <div>
-      <h1>Blog List</h1>
+      <h1>Blogs</h1>
 
       <Notification message={notification.message} type={notification.type} />
 
@@ -123,22 +122,16 @@ const App = () => {
           <p>
             {user.name} logged in <button onClick={handleLogout}>Logout</button>
           </p>
-
-          <Togglable buttonLabel="Create new blog" visible={blogFormVisible} setVisible={setBlogFormVisible}>
-            <BlogForm createBlog={createBlog} />
-          </Togglable>
-
+          <BlogForm createBlog={createBlog} />
         </div>
       )}
 
       <h2>Blogs</h2>
-      <ul>
+      <div>
         {blogs.map((blog) => (
-          <li key={blog.id}>
-            {blog.title} by {blog.author}
-          </li>
+          <Blog key={blog.id} blog={blog} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
