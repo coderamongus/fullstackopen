@@ -88,6 +88,38 @@ const App = () => {
     }
   };
 
+  const handleLike = async (blog) => {
+    try {
+      if (!blog.id) {
+        showNotification('Error: Blog ID is missing.', 'error');
+        return;
+      }
+  
+      const updatedBlog = {
+        ...blog, 
+        likes: blog.likes + 1,
+        user: blog.user, 
+      };
+  
+      const config = {
+        headers: { Authorization: `Bearer ${user.token}` },
+      };
+  
+      const response = await axios.put(
+        `http://localhost:3001/api/blogs/${blog.id}`,
+        updatedBlog,
+        config
+      );
+  
+      setBlogs(blogs.map(b => (b.id === blog.id ? updatedBlog : b))); 
+  
+    } catch (error) {
+      console.error('Error liking blog:', error);
+      showNotification('Error liking blog', 'error');
+    }
+  };
+  
+  
   return (
     <div>
       <h1>Blogs</h1>
@@ -129,7 +161,7 @@ const App = () => {
       <h2>Blogs</h2>
       <div>
         {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} handleLike={handleLike} />
         ))}
       </div>
     </div>
