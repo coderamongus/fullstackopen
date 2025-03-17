@@ -1,33 +1,27 @@
-import { useState } from 'react';
+import React from 'react';
 
-const Blog = ({ blog, handleLike }) => {
-  const [visible, setVisible] = useState(false);
+const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
+  const [showDetails, setShowDetails] = React.useState(false);
 
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+  const toggleDetails = () => setShowDetails(!showDetails);
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  };
+  const canDelete = currentUser && (blog.user?.username === currentUser.username || currentUser.username === 'admin');
 
   return (
-    <div style={blogStyle}>
+    <div style={{ border: '1px solid black', padding: '10px', marginBottom: '10px' }}>
       <div>
-        {blog.title} - {blog.author} 
-        <button onClick={toggleVisibility}>{visible ? 'Hide' : 'View'}</button>
+        {blog.title} - {blog.author}
+        <button onClick={toggleDetails}>{showDetails ? 'Hide' : 'Show'}</button>
       </div>
-
-      {visible && (
+      {showDetails && (
         <div>
-          <p><strong>URL:</strong> <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a></p>
-          <p><strong>Likes:</strong> {blog.likes} <button onClick={() => handleLike(blog)}>Like</button></p>
-          <p><strong>Author:</strong> {blog.author}</p>
-          <p><strong>Username:</strong> {blog.user?.name || 'Unknown'}</p>
+          <p>URL: <a href={blog.url} target="_blank" rel="noopener noreferrer">{blog.url}</a></p>
+          <p>
+            Likes: {blog.likes} <button onClick={() => handleLike(blog)}>Like</button>
+          </p>
+          <p>Author: {blog.author}</p>
+          <p>Username: {blog.user?.username || 'Unknown'}</p>
+          {canDelete && <button onClick={() => handleDelete(blog)}>Delete</button>}
         </div>
       )}
     </div>

@@ -71,19 +71,45 @@ const App = () => {
       const config = {
         headers: { Authorization: `Bearer ${user.token}` },
       };
-
+  
       const response = await axios.post(
         'http://localhost:3001/api/blogs',
         blogObject,
         config
       );
-
-      setBlogs(blogs.concat(response.data));
+  
+      const newBlogWithUser = {
+        ...response.data,
+        user: { username: user.username, name: user.name, id: user.id }
+      };
+  
+      setBlogs(blogs.concat(newBlogWithUser));
       showNotification(`A new blog "${blogObject.title}" by ${blogObject.author} added!`);
     } catch (error) {
       console.error('Error creating blog:', error);
-
       const errorMessage = error.response?.data?.error || 'Error creating blog';
+      showNotification(errorMessage, 'error');
+    }
+  };
+  
+
+  const handleDelete = async (blogToDelete) => {
+    const confirmDelete = window.confirm(`Delete blog "${blogToDelete.title}" by ${blogToDelete.author}?`);
+    if (!confirmDelete) return;
+
+    try {
+      const user = JSON.parse(localStorage.getItem('loggedBlogUser'));
+      const config = {
+        headers: { Authorization: `Bearer ${user.token}` },
+      };
+
+      await axios.delete(`http://localhost:3001/api/blogs/${blogToDelete.id}`, config);
+
+      setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id));
+      showNotification(`Deleted blog "${blogToDelete.title}" by ${blogToDelete.author}`);
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+      const errorMessage = error.response?.data?.error || 'Error deleting blog';
       showNotification(errorMessage, 'error');
     }
   };
@@ -94,32 +120,31 @@ const App = () => {
         showNotification('Error: Blog ID is missing.', 'error');
         return;
       }
-  
+
       const updatedBlog = {
-        ...blog, 
+        ...blog,
         likes: blog.likes + 1,
-        user: blog.user, 
+        user: blog.user,
       };
-  
+
       const config = {
         headers: { Authorization: `Bearer ${user.token}` },
       };
-  
-      const response = await axios.put(
+
+      await axios.put(
         `http://localhost:3001/api/blogs/${blog.id}`,
         updatedBlog,
         config
       );
-  
-      setBlogs(blogs.map(b => (b.id === blog.id ? updatedBlog : b))); 
-  
+
+      setBlogs(blogs.map(b => (b.id === blog.id ? updatedBlog : b)));
+
     } catch (error) {
       console.error('Error liking blog:', error);
       showNotification('Error liking blog', 'error');
     }
   };
-  
-  
+
   return (
     <div>
       <h1>Blogs</h1>
@@ -160,9 +185,18 @@ const App = () => {
 
       <h2>Blogs</h2>
       <div>
-        {blogs.map((blog) => (
-          <Blog key={blog.id} blog={blog} handleLike={handleLike} />
-        ))}
+        {blogs
+          .slice()
+          .sort((a, b) => b.likes - a.likes)
+          .map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              handleLike={handleLike}
+              handleDelete={handleDelete}
+              currentUser={user}
+            />
+          ))}
       </div>
     </div>
   );
