@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
+import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -10,6 +11,8 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [notification, setNotification] = useState({ message: '', type: '' });
+
+  const blogFormRef = useRef();
 
   useEffect(() => {
     const loggedUserJSON = localStorage.getItem('loggedBlogUser');
@@ -71,27 +74,23 @@ const App = () => {
       const config = {
         headers: { Authorization: `Bearer ${user.token}` },
       };
-  
-      const response = await axios.post(
-        'http://localhost:3001/api/blogs',
-        blogObject,
-        config
-      );
-  
+
+      const response = await axios.post('http://localhost:3001/api/blogs', blogObject, config);
+
       const newBlogWithUser = {
         ...response.data,
-        user: { username: user.username, name: user.name, id: user.id }
+        user: { username: user.username, name: user.name, id: user.id },
       };
-  
+
       setBlogs(blogs.concat(newBlogWithUser));
       showNotification(`A new blog "${blogObject.title}" by ${blogObject.author} added!`);
+      blogFormRef.current.toggleVisibility();  // Hide form after creation
     } catch (error) {
       console.error('Error creating blog:', error);
       const errorMessage = error.response?.data?.error || 'Error creating blog';
       showNotification(errorMessage, 'error');
     }
   };
-  
 
   const handleDelete = async (blogToDelete) => {
     const confirmDelete = window.confirm(`Delete blog "${blogToDelete.title}" by ${blogToDelete.author}?`);
@@ -105,7 +104,7 @@ const App = () => {
 
       await axios.delete(`http://localhost:3001/api/blogs/${blogToDelete.id}`, config);
 
-      setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id));
+      setBlogs(blogs.filter((blog) => blog.id !== blogToDelete.id));
       showNotification(`Deleted blog "${blogToDelete.title}" by ${blogToDelete.author}`);
     } catch (error) {
       console.error('Error deleting blog:', error);
@@ -131,14 +130,9 @@ const App = () => {
         headers: { Authorization: `Bearer ${user.token}` },
       };
 
-      await axios.put(
-        `http://localhost:3001/api/blogs/${blog.id}`,
-        updatedBlog,
-        config
-      );
+      await axios.put(`http://localhost:3001/api/blogs/${blog.id}`, updatedBlog, config);
 
-      setBlogs(blogs.map(b => (b.id === blog.id ? updatedBlog : b)));
-
+      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
     } catch (error) {
       console.error('Error liking blog:', error);
       showNotification('Error liking blog', 'error');
@@ -179,7 +173,10 @@ const App = () => {
           <p>
             {user.name} logged in <button onClick={handleLogout}>Logout</button>
           </p>
-          <BlogForm createBlog={createBlog} />
+
+          <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+            <BlogForm createBlog={createBlog} />
+          </Togglable>
         </div>
       )}
 
