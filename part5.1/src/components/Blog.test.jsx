@@ -2,6 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { describe, test, expect } from 'vitest'
 import Blog from './Blog'
+import BlogForm from './BlogForm'
 import '@testing-library/jest-dom'
 
 const blog = {
@@ -63,3 +64,29 @@ describe('<Blog />', () => {
   })
   
 })
+
+describe('<BlogForm />', () => {
+  test('calls createBlog with correct data when form is submitted', () => {
+    const createBlog = vi.fn()
+
+    render(<BlogForm createBlog={createBlog} />)
+
+    const titleInput = screen.getByPlaceholderText('Enter blog title')
+    const authorInput = screen.getByPlaceholderText('Enter author name')
+    const urlInput = screen.getByPlaceholderText('Enter blog URL')
+    const createButton = screen.getByText('Create')
+
+    fireEvent.change(titleInput, { target: { value: 'New Blog Title' } })
+    fireEvent.change(authorInput, { target: { value: 'Blog Author' } })
+    fireEvent.change(urlInput, { target: { value: 'http://blogurl.com' } })
+    fireEvent.click(createButton)
+
+    expect(createBlog).toHaveBeenCalledTimes(1)
+    expect(createBlog).toHaveBeenCalledWith({
+      title: 'New Blog Title',
+      author: 'Blog Author',
+      url: 'http://blogurl.com'
+    })
+  })
+})
+

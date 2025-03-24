@@ -52,6 +52,11 @@ app.use((error, request, response, next) => {
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./componentit/testingRouter');
+  app.use('/api/testing', testingRouter);
+}
+
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3001;
   var server = app.listen(PORT, () => {
