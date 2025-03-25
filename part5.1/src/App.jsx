@@ -84,7 +84,7 @@ const App = () => {
 
       setBlogs(blogs.concat(newBlogWithUser));
       showNotification(`A new blog "${blogObject.title}" by ${blogObject.author} added!`);
-      blogFormRef.current.toggleVisibility();  // Hide form after creation
+      blogFormRef.current.toggleVisibility();
     } catch (error) {
       console.error('Error creating blog:', error);
       const errorMessage = error.response?.data?.error || 'Error creating blog';
