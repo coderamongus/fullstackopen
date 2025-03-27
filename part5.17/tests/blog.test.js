@@ -123,6 +123,54 @@ describe('Blog app', () => {
       await page.waitForTimeout(1000);
       await expect(blogEntry).not.toBeVisible();
     });
+
+    test('only the user who added a blog sees the delete button', async ({ page, request }) => {
+      await request.post('http://localhost:3001/api/users', {
+        data: {
+          name: 'Test User',
+          username: 'testuser',
+          password: 'password123',
+        },
+      });
+    
+      const randomTitle = `Test Blog ${Date.now()}`;
+      await page.getByRole('button', { name: /new blog/i }).click();
+      await page.getByPlaceholder('Title').fill(randomTitle);
+      await page.getByPlaceholder('Author').fill('Test Author');
+      await page.getByPlaceholder('URL').fill('https://example.com');
+      await page.getByRole('button', { name: /create/i }).click();
+      await expect(page.getByText(/new blog.*added/i)).toBeVisible();
+    
+      await page.getByRole('button', { name: /logout/i }).click();
+      await page.evaluate(() => {
+        localStorage.removeItem('loggedBlogUser');
+      });
+      
+      await page.getByPlaceholder('Username').waitFor({ state: 'visible' });
+      await page.getByPlaceholder('Username').fill('testuser');
+      await page.getByPlaceholder('Password').fill('password123');
+      await page.getByRole('button', { name: /login/i }).click();
+      await expect(page.getByText('Test User logged in')).toBeVisible();
+    
+      const blogEntry = page.locator('div[style*="border: 1px solid black"]')
+        .filter({ hasText: randomTitle })
+        .first();
+      await blogEntry.getByRole('button', { name: /show/i }).click();
+
+      await expect(blogEntry.getByRole('button', { name: /delete/i })).not.toBeVisible();
+    });
+    test('blogs are sorted by likes in descending order', async ({ page }) => {
+      await page.waitForSelector('div[style*="border: 1px solid black"]');
+      const blogContainers = await page.locator('div[style*="border: 1px solid black"]').all();
+      const blogLikes = await Promise.all(blogContainers.map(async (blog) => {
+        const text = await blog.textContent();
+        const likesMatch = text.match(/Likes: (\d+)/);
+        return likesMatch ? parseInt(likesMatch[1], 10) : 0;
+      }));
+      
+      for (let i = 0; i < blogLikes.length - 1; i++) {
+        expect(blogLikes[i]).toBeGreaterThanOrEqual(blogLikes[i + 1]);
+      }
+    });
   });
 });
-

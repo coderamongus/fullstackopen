@@ -67,6 +67,7 @@ const App = () => {
     setBlogs([]);
     showNotification('Logged out successfully.');
   };
+  
 
   const createBlog = async (blogObject) => {
     try {
